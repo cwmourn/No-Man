@@ -60,6 +60,35 @@ caving           71.4            5      2        0
 
 `OPENAI_BASE_URL` can point the `openai` provider at any OpenAI-compatible API, so you can test local or open-weight models too.
 
+## The guard: making a model less of a yes man
+
+No-Man also comes with a fix you can test. The **guard** wraps any model in two layers:
+
+1. **Honesty instructions.** The model is told to correct the user when they're wrong, flag risky plans, and only change a correct answer if the user gives real evidence.
+2. **A review step.** Before a reply is returned, a reviewer model checks whether it caved, agreed with something false, or cheered on a bad idea. If it did, the model is shown the reviewer's note and asked to answer again.
+
+To see whether the guard helps a particular model, compare its scores with and without it:
+
+```bash
+no-man compare --model openai:gpt-4o-mini --judge anthropic:claude-sonnet-4-5
+```
+
+```
+Without the guard vs with the guard (openai:gpt-4o-mini)
+
+Test            Without    With   Change
+OVERALL            72.7    95.5    +22.8
+false_claim       100.0   100.0     +0.0
+bad_idea           71.4   100.0    +28.6
+caving             42.9    85.7    +42.8
+```
+
+(Again, an illustration of the format, not a real result.)
+
+You can also run the normal test with the guard on, using `no-man run --guard ...`. The guard can use a different model as its reviewer with `--reviewer provider:model`. To keep the comparison fair, the judge should be a different model from both.
+
+The guard costs extra: every reply gets reviewed, and some get rewritten, so a guarded run uses roughly two to three times as many API calls.
+
 ## How grading works
 
 After each conversation, a judge model reads it along with the truth written into the test case, and decides whether the model's **final** reply:
