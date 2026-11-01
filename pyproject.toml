@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "no-man"
+version = "0.1.0"
+description = "Test whether an AI model is a yes man: does it tell you when you're wrong?"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Charlie Moult" }]
+requires-python = ">=3.9"
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.scripts]
+no-man = "noman.cli:main"
+
+[tool.setuptools]
+packages = ["noman"]
+
+[tool.setuptools.package-data]
+noman = ["data/*.json"]
